@@ -211,34 +211,38 @@
     <button onclick="compareAndRemove()" class="pushable">
         <span class="shadow"></span>
         <span class="edge"></span>
-        <span class="front">Compare - Remove</span>
+        <span class="front">Compare and Remove</span>
     </button>
 
     <script>
         function removeDuplicatesAndEmptyLines(arr) {
-            return arr.filter((item, index) => item.trim() !== '' && arr.indexOf(item) === index);
+            let uniqueLines = new Set();
+            return arr.filter(item => {
+                let trimmedItem = item.trim();
+                if (trimmedItem === '' || uniqueLines.has(trimmedItem.toLowerCase())) {
+                    return false;
+                }
+                uniqueLines.add(trimmedItem.toLowerCase());
+                return true;
+            });
         }
 
         function compareAndRemove() {
-            var textarea1 = document.getElementById('textarea1').value.split('\n');
-            var textarea2 = document.getElementById('textarea2').value.split('\n');
+            let textarea1 = document.getElementById('textarea1').value.split('\n');
+            let textarea2 = document.getElementById('textarea2').value.split('\n');
 
             // Remove duplicates and empty lines
             textarea1 = removeDuplicatesAndEmptyLines(textarea1);
             textarea2 = removeDuplicatesAndEmptyLines(textarea2);
 
-            textarea1.forEach(function(text) {
-                text = text.trim();
-                var index = textarea2.indexOf(text);
-                if (index !== -1) {
-                    textarea2.splice(index, 1);
-                }
-            });
+            let text1LowerCase = textarea1.map(text => text.toLowerCase());
+
+            textarea2 = textarea2.filter(text => !text1LowerCase.includes(text.toLowerCase()));
 
             document.getElementById('textarea2').value = textarea2.join('\n');
 
             // Copy the contents of textarea2 to clipboard
-            var textarea2Content = document.getElementById('textarea2').value;
+            let textarea2Content = document.getElementById('textarea2').value;
             navigator.clipboard.writeText(textarea2Content).then(function() {
                 console.log('Text copied to clipboard');
             }, function(err) {
